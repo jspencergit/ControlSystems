@@ -13,8 +13,8 @@ matplotlib.use('Qt5Agg')  # Separate window
 
 # Configuration
 LTSPICE_PATH = "C:/Program Files/ADI/LTspice/LTspice.exe"
-ASC_FILE = "PoleZeroPair_Laplace.asc"
-RAW_FILE = "PoleZeroPair_Laplace_1.raw"    # Updated to match LTspice output
+ASC_FILE = "PoleZeroPair_Circuit.asc"
+RAW_FILE = "PoleZeroPair_Circuit_1.raw"    # Updated to match LTspice output
 
 # Check if the .asc file exists
 if not os.path.exists(ASC_FILE):
