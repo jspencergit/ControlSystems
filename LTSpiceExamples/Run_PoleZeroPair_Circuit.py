@@ -38,48 +38,73 @@ l.parse()
 
 # Extract frequency, magnitude, and phase data
 freq = l.get_frequency()
-vout = l.get_data('V(out)')  # Matches FLAG 288 96 OUT
+vout = l.get_data('V(out)')  # Matches FLAG 448 96 out
 mag = 20 * np.log10(np.abs(vout))  # Magnitude in dB
 phase = np.angle(vout, deg=True)   # Phase in degrees
 
-# Create subplots: magnitude and phase
-fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 8), sharex=True)
+# Calculate pole and zero frequencies from component values
+R1 = 500e3    # 500kΩ
+R2 = 10e3     # 10kΩ
+C1 = 1000e-12 # 1000pF
+fp = 1/(2*np.pi*(R1 + R2)*C1)  # Pole frequency ~312Hz
+fz = 1/(2*np.pi*R2*C1)         # Zero frequency ~15.9kHz
 
-# Plot Magnitude
+# Calculate frequency and value of maximum phase deflection
+f_max_phase = np.sqrt(fp * fz)  # Geometric mean ~2.2kHz
+max_phase = np.arctan(np.sqrt(fp/fz)) - np.arctan(np.sqrt(fz/fp))  # ~74°
+max_phase_deg = np.degrees(max_phase)  # Convert to degrees
+
+# Find indices for pole, zero, and max phase frequencies
+fp_idx = np.argmin(np.abs(freq - fp))
+fz_idx = np.argmin(np.abs(freq - fz))
+f_max_idx = np.argmin(np.abs(freq - f_max_phase))
+
+# Create figure with three subplots: magnitude, phase, and schematic
+fig = plt.figure(figsize=(12, 12))  # Increased height to accommodate third subplot
+# Define subplot layout: 3 rows, 1 column
+# Adjust heights to give more space to magnitude and phase plots
+gs = fig.add_gridspec(3, 1, height_ratios=[2, 2, 1])  # 2:2:1 ratio for heights
+
+# Magnitude plot (first subplot)
+ax1 = fig.add_subplot(gs[0, 0])
 mag_plot, = ax1.semilogx(freq, mag, label='Magnitude (dB)', color='blue')
 ax1.grid(True, which="both", ls="--")
 ax1.set_ylabel('Magnitude (dB)')
 ax1.set_title('Frequency Response: Gain and Phase')
 
-# Markers for poles and zeros on magnitude plot
-ax1.axvline(x=10, color='red', linestyle='--', label='Pole at 0 Hz')
-ax1.plot(10, mag[0], 'rx', markersize=10, label='_')
-zero_freq = 10e3
-zero_idx = np.argmin(np.abs(freq - zero_freq))  # Fixed typo: freq - zero_freq
-ax1.axvline(x=zero_freq, color='green', linestyle='--', label='Zero at 10kHz')
-ax1.plot(zero_freq, mag[zero_idx], 'go', markersize=10, label='_')
-pole_freq = 100e3
-pole_idx = np.argmin(np.abs(freq - pole_freq))
-ax1.axvline(x=pole_freq, color='red', linestyle='--', label='Pole at 100kHz')
-ax1.plot(pole_freq, mag[pole_idx], 'rx', markersize=10, label='_')
+# Markers for pole and zero on magnitude plot
+ax1.axvline(x=fp, color='red', linestyle='--', label=f'Pole at {fp:.0f}Hz')
+ax1.plot(fp, mag[fp_idx], 'rx', markersize=10)
+ax1.axvline(x=fz, color='green', linestyle='--', label=f'Zero at {fz/1000:.1f}kHz')
+ax1.plot(fz, mag[fz_idx], 'go', markersize=10)
 ax1.legend()
 
-# Plot Phase
+# Phase plot (second subplot)
+ax2 = fig.add_subplot(gs[1, 0], sharex=ax1)
 phase_plot, = ax2.semilogx(freq, phase, label='Phase (deg)', color='purple')
 ax2.grid(True, which="both", ls="--")
 ax2.set_xlabel('Frequency (Hz)')
 ax2.set_ylabel('Phase (deg)')
 ax2.set_ylim(-180, 180)  # Limit phase to ±180°
 
-# Markers for poles and zeros on phase plot
-ax2.axvline(x=10, color='red', linestyle='--', label='_')
-ax2.plot(10, phase[0], 'rx', markersize=10, label='_')
-ax2.axvline(x=zero_freq, color='green', linestyle='--', label='_')
-ax2.plot(zero_freq, phase[zero_idx], 'go', markersize=10, label='_')
-ax2.axvline(x=pole_freq, color='red', linestyle='--', label='_')
-ax2.plot(pole_freq, phase[pole_idx], 'rx', markersize=10, label='_')
+# Markers for pole, zero, and max phase on phase plot
+ax2.axvline(x=fp, color='red', linestyle='--')
+ax2.plot(fp, phase[fp_idx], 'rx', markersize=10)
+ax2.axvline(x=fz, color='green', linestyle='--')
+ax2.plot(fz, phase[fz_idx], 'go', markersize=10)
+ax2.axvline(x=f_max_phase, color='orange', linestyle='--', 
+            label=f'Max Phase at {f_max_phase/1000:.1f}kHz ({max_phase_deg:.0f}°)')
+ax2.plot(f_max_phase, phase[f_max_idx], 'yo', markersize=10)
+ax2.legend()
 
-# Add interactive cursor
+# Schematic plot (third subplot)
+ax3 = fig.add_subplot(gs[2, 0])
+schematic_img = plt.imread("PoleZeroPair_Circuit.jpg")
+ax3.imshow(schematic_img)
+ax3.axis('off')  # Hide axes for the schematic
+ax3.set_title('Schematic')
+
+# Add interactive cursor to magnitude and phase plots
 cursor = mplcursors.cursor([mag_plot, phase_plot], hover=True)
 @cursor.connect("add")
 def on_add(sel):
