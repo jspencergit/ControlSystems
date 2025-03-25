@@ -81,7 +81,7 @@ for idx, r_iso in enumerate(R_ISO_VALUES):
     phase_margins.append(phase_margin)
     
     # Plot Magnitude
-    mag_plot, = ax1.semilogx(freq, mag, label=f'R_ISO = {r_iso if r_iso >= 1 else r_iso*1000:.0f}{"MΩ" if r_iso >= 1 else "mΩ"}', color=COLORS[idx])
+    mag_plot, = ax1.semilogx(freq, mag, label=f'R_ISO = {r_iso/1e6 if r_iso >= 1 else r_iso*1000:.0f}{"MΩ" if r_iso >= 1 else "mΩ"}', color=COLORS[idx])
     ax1.grid(True, which="both", ls="--")
     ax1.set_ylabel('Magnitude (dB)')
     ax1.set_title('Frequency Response: V(Remote_Sense)/V(FB)')
@@ -90,7 +90,7 @@ for idx, r_iso in enumerate(R_ISO_VALUES):
     ax1.axvline(x=bandwidth_freq, color=COLORS[idx], linestyle='--', alpha=0.5)
     
     # Plot Phase
-    phase_plot, = ax2.semilogx(freq, phase, label=f'R_ISO = {r_iso if r_iso >= 1 else r_iso*1000:.0f}{"MΩ" if r_iso >= 1 else "mΩ"}', color=COLORS[idx])
+    phase_plot, = ax2.semilogx(freq, phase, label=f'R_ISO = {r_iso/1e6 if r_iso >= 1 else r_iso*1000:.0f}{"MΩ" if r_iso >= 1 else "mΩ"}', color=COLORS[idx])
     ax2.grid(True, which="both", ls="--")
     ax2.set_xlabel('Frequency (Hz)')
     ax2.set_ylabel('Phase (deg)')
