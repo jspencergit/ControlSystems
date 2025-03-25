@@ -1,0 +1,19 @@
+# Virtual environments
+.venv/
+venv/
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# LTSpice temporary files
+*.raw
+*.log
+*.net
+
+# Other temporary or local files
+*.bak
+*.tmp
+.DS_Store  # macOS-specific
