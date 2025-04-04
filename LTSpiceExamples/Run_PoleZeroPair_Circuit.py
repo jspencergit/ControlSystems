@@ -1,4 +1,4 @@
-# simulate_and_plot.py
+# Run_PoleZeroPair_Circuit.py
 from PyLTSpice import SimCommander  # For running LTSpice
 import ltspice                      # For reading .raw files
 import matplotlib.pyplot as plt
@@ -9,7 +9,8 @@ import sys                          # Added for sys.exit()
 import mplcursors                   # For interactive cursor
 
 # Switch to an interactive backend
-matplotlib.use('Qt5Agg')  # Separate window
+#matplotlib.use('Qt5Agg')  # Separate window.  Useful for Spyder.  Requires "pip install PyQt5"
+matplotlib.use('TkAgg')
 
 # Configuration
 LTSPICE_PATH = "C:/Program Files/ADI/LTspice/LTspice.exe"

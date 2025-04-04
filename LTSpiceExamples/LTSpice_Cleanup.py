@@ -1,3 +1,4 @@
+#LTSpice_Cleanup.py
 import os
 
 # List of file extensions to delete

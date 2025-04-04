@@ -10,7 +10,8 @@ import mplcursors                   # For interactive cursor
 import time                         # For adding a delay
 
 # Switch to an interactive backend
-matplotlib.use('Qt5Agg')  # Separate window
+#matplotlib.use('Qt5Agg')  # Separate window.  Useful for Spyder.  Requires "pip install PyQt5"
+matplotlib.use('TkAgg')
 
 # Configuration
 LTSPICE_PATH = "C:/Program Files/ADI/LTspice/LTspice.exe"  # Update this path if needed
